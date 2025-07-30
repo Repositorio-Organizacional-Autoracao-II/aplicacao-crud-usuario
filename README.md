@@ -8,6 +8,14 @@ Este projeto foi desenvolvido como parte da disciplina **Autoração Multimídia
 Instituto Universidade Virtual (UFC Virtual)
 Universidade Federal do Ceará (UFC)
 
+Equipe
+
+**Aldair Gomes De Castro Sales**
+**Felipe Moreira Pontes Da Rocha**
+**Gabriel Luis De Oliveira Gois**
+**Guilherme Alves Teixeira Da Silva**
+**Joao Lucas Nascimento Silva**
+
 ---
 
 ## ✅ Requisitos Funcionais
