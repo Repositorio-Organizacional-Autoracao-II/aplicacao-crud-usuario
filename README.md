@@ -10,12 +10,14 @@ Universidade Federal do Ceará (UFC)
 
 Equipe
 
-**Aldair Gomes De Castro Sales**
-**Felipe Moreira Pontes Da Rocha**
-**Gabriel Luis De Oliveira Gois**
-**Guilherme Alves Teixeira Da Silva**
-**Joao Lucas Nascimento Silva**
-
+## Equipe
+| Nome              |
+|-------------------|
+| Aldair Gomes      |
+| Felipe Moreira    |
+| Gabriel Gois      |
+| Guilherme Alves   | 
+| João Lucas        | 
 ---
 
 ## ✅ Requisitos Funcionais
