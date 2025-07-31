@@ -8,16 +8,6 @@ Este projeto foi desenvolvido como parte da disciplina **Autoração Multimídia
 Instituto Universidade Virtual (UFC Virtual)
 Universidade Federal do Ceará (UFC)
 
-Equipe
-
-## Equipe
-| Nome              |
-|-------------------|
-| Aldair Gomes      |
-| Felipe Moreira    |
-| Gabriel Gois      |
-| Guilherme Alves   | 
-| João Lucas        | 
 ---
 
 ## ✅ Requisitos Funcionais

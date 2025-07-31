@@ -1,36 +1,178 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Tabela de Usuários com Paginação</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <h1>👥 Lista de Usuários com Paginação</h1>
-    <!-- Adicione estes links no menu do index.html -->
-    <menu>
-      <a href="cadastra_usuario.html">Cadastrar Usuário</a>
-      <a href="alterar_dados_usuarios.html">Alterar Usuários</a>
-      <a href="remover_usuario.html">Remover Usuários</a>
-    </menu>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Usuários Cadastrados</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f7fb;
+      color: #333;
+      margin: 0;
+      padding: 10px 20px 20px 20px; /* padding top menor para subir o conteúdo */
+    }
+
+    h1 {
+      text-align: center;
+      color: #2d56ae;
+      margin-bottom: 30px; /* título mais próximo do botão */
+    }
+
+    .acoes {
+      text-align: center;
+      margin-bottom: 50px; /* espaço maior entre botão e tabela */
+    }
+
+    .acoes a {
+      text-decoration: none;
+      background-color: #2d56ae;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    .acoes a:hover {
+      background-color: #1e3e8a;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid #e0e0e0;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f0f0f0;
+      color: #333;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    th:hover {
+      background-color: #e0e0e0;
+    }
+
+    button {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 5px;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .edit {
+      background-color: #fbbc05;
+      color: black;
+    }
+
+    .delete {
+      background-color: #ea4335;
+      color: white;
+    }
+
+    .paginacao {
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    .paginacao button {
+      background-color: #2d56ae;
+      color: white;
+      padding: 6px 12px;
+      margin: 0 5px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .paginacao button:hover {
+      background-color: #1e3e8a;
+    }
+
+    #formEditar {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 400px;
+      margin: 20px auto;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      display: none;
+    }
+
+    #formEditar input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    #formEditar button {
+      margin-top: 10px;
+    }
+
+    .tabela-container {
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Lista de Usuários</h1>
+
+  <div class="acoes">
+    <a href="cadastra_usuario.html">+ Cadastrar Novo Usuário</a>
+  </div>
+
+  <div class="tabela-container">
     <table id="tabelaUsuarios">
       <thead>
         <tr>
-          <th onclick="ordenarTabela('nome')">Nome ⬍</th>
-          <th onclick="ordenarTabela('idade')">Idade ⬍</th>
-          <th>Endereço</th>
-          <th>Email</th>
+          <th onclick="ordenarTabela('nome')">Nome</th>
+          <th onclick="ordenarTabela('idade')">Idade</th>
+          <th onclick="ordenarTabela('endereco')">Endereço</th>
+          <th onclick="ordenarTabela('email')">Email</th>
+          <th>ID</th>
+          <th>Ações</th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
+  </div>
 
-    <div class="paginacao">
-      <button onclick="paginaAnterior()">⬅ Anterior</button>
-      Página <span id="paginaAtual">1</span> de <span id="totalPaginas">1</span>
-      <button onclick="proximaPagina()">Próxima ➡</button>
-    </div>
+  <div class="paginacao">
+    <button onclick="paginaAnterior()">← Anterior</button>
+    Página <span id="paginaAtual">1</span> de <span id="totalPaginas">?</span>
+    <button onclick="proximaPagina()">Próxima →</button>
+  </div>
 
-    <script src="script.js"></script>
-  </body>
+  <!-- Formulário de edição -->
+  <div id="formEditar">
+    <h3>Editar Usuário</h3>
+    <input type="hidden" id="editId" />
+    <input type="text" id="editNome" placeholder="Nome" required />
+    <input type="number" id="editIdade" placeholder="Idade" required />
+    <input type="text" id="editEndereco" placeholder="Endereço" required />
+    <input type="email" id="editEmail" placeholder="Email" required />
+    <button class="edit" onclick="salvarEdicao()">Salvar Alterações</button>
+    <button class="delete" onclick="esconderFormularioEditar()">Cancelar</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
 </html>

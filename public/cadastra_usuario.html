@@ -1,106 +1,176 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cadastra Usuários</title>
-  </head>
-  <body>
-    <h1>Cadastra Usuários</h1>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastrar Usuário</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #fff;
+      padding: 40px 30px; /* Aumentado nas laterais */
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.05);
+      width: 100%;
+      max-width: 500px;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2d56ae;
+      margin-bottom: 20px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px; /* Espaçamento entre os campos */
+    }
+
+    form input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+
+    form input:focus {
+      outline: none;
+      border-color: #2d56ae;
+      box-shadow: 0 0 0 1px #2d56ae50;
+    }
+
+    form button {
+      background: #2d56ae;
+      color: white;
+      border: none;
+      padding: 12px;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    form button:hover {
+      background: #1e3e8a;
+    }
+
+    .mensagem {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .mensagem.sucesso {
+      color: green;
+    }
+
+    .mensagem.erro {
+      color: red;
+    }
+
+    .usuario-info {
+      margin-top: 20px;
+      background: #f1f1f1;
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .navegacao_paginas {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .navegacao_paginas a {
+      color: #2d56ae;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .navegacao_paginas a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Cadastrar Usuário</h1>
     <form id="formulario">
-      <!-- Campos do formulário -->
-      <input type="text" id="nome" placeholder="Nome" />
-      <input type="number" id="idade" placeholder="Idade" />
-      <input type="text" id="endereco" placeholder="Endereço" />
-      <input type="email" id="email" placeholder="Email" />
+      <input type="text" id="nome" placeholder="Nome" required />
+      <input type="number" id="idade" placeholder="Idade" required />
+      <input type="text" id="endereco" placeholder="Endereço" required />
+      <input type="email" id="email" placeholder="Email" required />
       <button type="submit">Cadastrar</button>
     </form>
-    <div id="mensagem"></div>
-    <div id="novoUsuario"></div>
+    <div id="mensagem" class="mensagem"></div>
+    <div id="novoUsuario" class="usuario-info"></div>
     <div class="navegacao_paginas">
-      <a href="index.html">Retornar ao Home</a>
+      <a href="index.html">← Voltar para a Home</a>
     </div>
-    <script>
-      const formulario = document.getElementById("formulario");
-      formulario.addEventListener("submit", (event) => {
-        event.preventDefault(); //captura o evento e envia para o resto da pagina
-        const nome = document.getElementById("nome").value;
-        const idade = document.getElementById("idade").value;
-        const endereco = document.getElementById("endereco").value;
+  </div>
 
-        /*
-          fetch().then() // Método para tratamento de algo assíncrono. Substitui o async/await.
-          //Isto é chamado de Promise
-        */
-        const email = document.getElementById("email").value;
+  <script>
+    const formulario = document.getElementById("formulario");
 
-        /*
-        No fetch() utilizado no arquivo scrpt.js, tínhamos isso:
-        async function carrega_usuarios(){
-          const resposta = await fetch("/list-users/200");
-          usuarios = await resposta.json();
-          return usuarios;
-        }
-        Posso transformar isso, para:
+    formulario.addEventListener("submit", async (event) => {
+      event.preventDefault();
 
+      const nome = document.getElementById("nome").value;
+      const idade = document.getElementById("idade").value;
+      const endereco = document.getElementById("endereco").value;
+      const email = document.getElementById("email").value;
 
-        fetch("/list-users/200")
-          .then((resposta) => resposta.json())
-          .then((usuarios) => {
-            return usuarios;
-          })
-
-          Vou usar esta segunda notação, mais simples, no código a seguir.
-
-        */
-
-        fetch("/cadastrar-usuario", {
+      try {
+        const resposta = await fetch("/cadastrar-usuario", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ nome, idade, endereco, email }), // Envia os dados do formulário como JSON
-        })
-        .then((resposta) => resposta.json()) 
-        /*
-            (resposta) => resposta.json() //Arrow Function
-            
-                      |
-                      V
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nome, idade, endereco, email }),
+        });
 
-                      (resposta)=>{
-                        return resposta.json()
-                      }
+        const data = await resposta.json();
+        const mensagem = document.getElementById("mensagem");
+        const novoUsuario = document.getElementById("novoUsuario");
 
-        */
-        .then((data) => {
-            const mensagem = document.getElementById("mensagem");
-            const novoUsuario = document.getElementById("novoUsuario");
+        if (data.ok) {
+          mensagem.textContent = data.message;
+          mensagem.className = "mensagem sucesso";
 
-            if (data.ok) {
-              mensagem.innerHTML = data.message;
-              novoUsuario.innerHTML = `
-                <p>Nome: ${data.usuario.nome}</p>
-                <p>Idade: ${data.usuario.idade}</p>
-                <p>Endereço: ${data.usuario.endereco}</p>
-                <p>E-mail: ${data.usuario.email}</p>
-                `;
-            } else {
-              mensagem.textContent = "Erro ao cadastrar usuário.";
-            }
-          })
-          // .then((data) => { // Processa a resposta da API
-          //     const mensagem = document.getElementById("mensagem");
-          //     if (data.ok) {
-          //       mensagem.textContent = "Usuário cadastrado com sucesso!";
-          //     } else {
-          //       mensagem.textContent = "Erro ao cadastrar usuário.";
-          //     }
-          //   })
-          .catch((error) => { //Trata algum erro na "cadeia" de eventos tratada pela Promise
-            console.error("Erro:", error);
-          });
-      });
-    </script>
-  </body>
+          novoUsuario.innerHTML = `
+            <p><strong>Nome:</strong> ${data.usuario.nome}</p>
+            <p><strong>Idade:</strong> ${data.usuario.idade}</p>
+            <p><strong>Endereço:</strong> ${data.usuario.endereco}</p>
+            <p><strong>Email:</strong> ${data.usuario.email}</p>
+          `;
+
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 2000);
+        } else {
+          mensagem.textContent = "Erro ao cadastrar usuário.";
+          mensagem.className = "mensagem erro";
+        }
+      } catch (error) {
+        console.error("Erro:", error);
+        const mensagem = document.getElementById("mensagem");
+        mensagem.textContent = "Erro de conexão.";
+        mensagem.className = "mensagem erro";
+      }
+    });
+  </script>
+</body>
 </html>
