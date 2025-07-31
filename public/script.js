@@ -3,8 +3,11 @@ let paginaAtual = 1;
 const usuariosPorPagina = 20;
 
 let ordemAtual = { campo: "nome", crescente: true };
+let totalUsuarios = 0; // Novo: guarda o total vindo do backend
 
+// -----------------------------------------------------------------------------
 // Função para carregar usuários do servidor, paginando pela API
+// -----------------------------------------------------------------------------
 async function carregarUsuarios() {
   try {
     const resposta = await fetch(
@@ -14,6 +17,7 @@ async function carregarUsuarios() {
 
     const dados = await resposta.json();
     usuarios = dados.usuarios || [];
+    totalUsuarios = dados.total || 0; // Novo: guarda o total de usuários
 
     atualizarPaginacao();
   } catch (error) {
@@ -21,7 +25,9 @@ async function carregarUsuarios() {
   }
 }
 
+// -----------------------------------------------------------------------------
 // Comparação de strings ignorando acentos e case
+// -----------------------------------------------------------------------------
 function comparaStrings(a, b, fullCompare = true) {
   const sa = a.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
   const sb = b.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
@@ -36,7 +42,9 @@ function comparaStrings(a, b, fullCompare = true) {
   return 0;
 }
 
+// -----------------------------------------------------------------------------
 // Bubble sort para ordenar o array de usuários
+// -----------------------------------------------------------------------------
 function bubbleSort(arr, key, crescente = true) {
   const tipo = typeof arr[0]?.[key];
   const n = arr.length;
@@ -53,7 +61,9 @@ function bubbleSort(arr, key, crescente = true) {
   }
 }
 
+// -----------------------------------------------------------------------------
 // Ordena a tabela ao clicar nos cabeçalhos
+// -----------------------------------------------------------------------------
 function ordenarTabela(campo) {
   ordemAtual =
     ordemAtual.campo === campo
@@ -64,35 +74,42 @@ function ordenarTabela(campo) {
   atualizarPaginacao();
 }
 
+// -----------------------------------------------------------------------------
 // Atualiza dados na tabela baseado na página atual
+// -----------------------------------------------------------------------------
 function atualizarPaginacao() {
-  const totalPaginas = Math.ceil(usuarios.length / usuariosPorPagina);
-  paginaAtual = Math.max(1, Math.min(paginaAtual, totalPaginas));
+  const totalPaginas = Math.ceil(totalUsuarios / usuariosPorPagina);
 
   document.getElementById("paginaAtual").innerText = paginaAtual;
   document.getElementById("totalPaginas").innerText = totalPaginas;
 
-  const inicio = (paginaAtual - 1) * usuariosPorPagina;
-  const fim = inicio + usuariosPorPagina;
-
-  renderizarTabela(usuarios.slice(inicio, fim));
+  renderizarTabela(usuarios);
 }
 
+// -----------------------------------------------------------------------------
+// Botão para página anterior
+// -----------------------------------------------------------------------------
 function paginaAnterior() {
   if (paginaAtual > 1) {
     paginaAtual--;
-    carregarUsuarios(); // Recarrega nova página do backend
+    carregarUsuarios();
   }
 }
 
+// -----------------------------------------------------------------------------
+// Botão para próxima página
+// -----------------------------------------------------------------------------
 function proximaPagina() {
-  const totalPaginas = Math.ceil(usuarios.length / usuariosPorPagina);
+  const totalPaginas = Math.ceil(totalUsuarios / usuariosPorPagina);
   if (paginaAtual < totalPaginas) {
     paginaAtual++;
-    carregarUsuarios(); // Recarrega nova página do backend
+    carregarUsuarios();
   }
 }
 
+// -----------------------------------------------------------------------------
+// Renderiza a tabela de usuários
+// -----------------------------------------------------------------------------
 function renderizarTabela(data) {
   const tbody = document.querySelector("#tabelaUsuarios tbody");
   tbody.innerHTML = "";
@@ -113,8 +130,14 @@ function renderizarTabela(data) {
   });
 }
 
+// -----------------------------------------------------------------------------
+// Executa quando a página carrega
+// -----------------------------------------------------------------------------
 window.onload = carregarUsuarios;
 
+// -----------------------------------------------------------------------------
+// Prepara os dados do usuário para edição
+// -----------------------------------------------------------------------------
 function prepararEdicao(id) {
   const usuario = usuarios.find((u) => u.id === id);
   if (!usuario) return;
@@ -136,6 +159,9 @@ function esconderFormularioEditar() {
   document.getElementById("formEditar").style.display = "none";
 }
 
+// -----------------------------------------------------------------------------
+// Salva edição do usuário
+// -----------------------------------------------------------------------------
 async function salvarEdicao() {
   const id = document.getElementById("editId").value;
   const dadosAtualizados = {
@@ -171,9 +197,12 @@ async function salvarEdicao() {
   }
 
   esconderFormularioEditar();
-  carregarUsuarios(); // recarrega lista atualizada
+  carregarUsuarios();
 }
 
+// -----------------------------------------------------------------------------
+// Remove usuário
+// -----------------------------------------------------------------------------
 async function removerUsuarioDireto(id) {
   const confirmacao = confirm("Tem certeza que deseja remover este usuário?");
   if (!confirmacao) return;
@@ -196,10 +225,12 @@ async function removerUsuarioDireto(id) {
     return;
   }
 
-  carregarUsuarios(); // recarrega lista após remoção
+  carregarUsuarios();
 }
 
-// Expor funções globalmente para HTML
+// -----------------------------------------------------------------------------
+// Torna funções acessíveis no HTML
+// -----------------------------------------------------------------------------
 window.prepararEdicao = prepararEdicao;
 window.salvarEdicao = salvarEdicao;
 window.removerUsuarioDireto = removerUsuarioDireto;

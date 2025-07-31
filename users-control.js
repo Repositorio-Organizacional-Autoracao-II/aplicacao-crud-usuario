@@ -6,37 +6,25 @@ const readline = require("readline");
 const { v4: uuidv4 } = require("uuid");
 const { sanitizarTexto, validarCampos } = require("./valida");
 
-// Caminho para o arquivo onde os usuários são armazenados em formato JSONL
+// Caminho do arquivo de usuários no formato JSONL
 const filePath = path.join(__dirname, "usuarios.json");
 
 /**
- * Adiciona um novo usuário ao final do arquivo JSONL usando append.
- * A operação é feita sem precisar carregar todo o conteúdo do arquivo em memória.
- *
- * @param {Object} usuario - Objeto com dados do novo usuário.
- * @returns {Promise<void>}
+ * Adiciona um novo usuário ao final do arquivo (append)
+ * sem precisar carregar todo o arquivo na memória.
  */
 function appendUsuario(usuario) {
-  // Gera um ID único para o usuário
   usuario.id = uuidv4();
-
-  // Sanitiza os campos individualmente
   usuario.nome = sanitizarTexto(usuario.nome);
   usuario.endereco = sanitizarTexto(usuario.endereco);
   usuario.email = sanitizarTexto(usuario.email);
 
-  // Serializa e adiciona nova linha ao final do arquivo
   const linha = JSON.stringify(usuario) + "\n";
   return fs.promises.appendFile(filePath, linha, "utf-8");
 }
 
 /**
- * Lê usuários de forma paginada, sem carregar o arquivo inteiro em memória.
- * A leitura é feita linha a linha até atingir a página solicitada.
- *
- * @param {number} pagina - Número da página desejada (inicia em 1).
- * @param {number} porPagina - Quantidade de usuários por página.
- * @returns {Promise<Array<Object>>} - Lista de usuários da página.
+ * Lê usuários por página (modo paginado) sem carregar tudo na memória.
  */
 async function lerUsuariosPaginado(pagina = 1, porPagina = 10) {
   const inicio = (pagina - 1) * porPagina;
@@ -50,7 +38,7 @@ async function lerUsuariosPaginado(pagina = 1, porPagina = 10) {
     if (i >= inicio && usuarios.length < porPagina) {
       try {
         usuarios.push(JSON.parse(linha));
-      } catch {} // Ignora linhas malformadas
+      } catch {}
     }
     if (usuarios.length >= porPagina) break;
     i++;
@@ -60,12 +48,24 @@ async function lerUsuariosPaginado(pagina = 1, porPagina = 10) {
 }
 
 /**
- * Edita um usuário existente com base em seu ID.
- * O arquivo é regravado linha por linha com um novo arquivo temporário.
- *
- * @param {string} id - ID do usuário a ser editado.
- * @param {Object} novosDados - Objeto contendo os dados atualizados.
- * @returns {Promise<void>}
+ * Conta o total de linhas (usuários) no arquivo JSONL.
+ * Usado para saber o total de páginas no frontend.
+ */
+async function contarTotalUsuarios() {
+  let total = 0;
+
+  const stream = fs.createReadStream(filePath);
+  const rl = readline.createInterface({ input: stream });
+
+  for await (const linha of rl) {
+    if (linha.trim()) total++;
+  }
+
+  return total;
+}
+
+/**
+ * Edita um usuário regravando o arquivo linha por linha (arquivo temporário).
  */
 async function editarUsuario(id, novosDados) {
   const tempFilePath = filePath + ".tmp";
@@ -82,13 +82,11 @@ async function editarUsuario(id, novosDados) {
     try {
       usuario = JSON.parse(linha);
     } catch {
-      // Copia linhas inválidas sem alteração
       tempStream.write(linha + "\n");
       continue;
     }
 
     if (usuario.id === id) {
-      // Atualiza e sanitiza os dados do usuário
       const atualizado = {
         ...usuario,
         ...novosDados,
@@ -107,11 +105,7 @@ async function editarUsuario(id, novosDados) {
 }
 
 /**
- * Remove um usuário do arquivo JSONL com base em seu ID.
- * A linha correspondente é ignorada ao regravar o novo arquivo.
- *
- * @param {string} id - ID do usuário a ser removido.
- * @returns {Promise<void>}
+ * Remove um usuário ignorando a linha correspondente ao regravar o arquivo.
  */
 async function deletarUsuario(id) {
   const tempFilePath = filePath + ".tmp";
@@ -128,12 +122,10 @@ async function deletarUsuario(id) {
     try {
       usuario = JSON.parse(linha);
     } catch {
-      // Copia linhas inválidas sem alteração
       tempStream.write(linha + "\n");
       continue;
     }
 
-    // Copia somente se não for o usuário a ser deletado
     if (usuario.id !== id) {
       tempStream.write(JSON.stringify(usuario) + "\n");
     }
@@ -143,10 +135,10 @@ async function deletarUsuario(id) {
   await fs.promises.rename(tempFilePath, filePath);
 }
 
-// Exporta todas as funções para uso externo
 module.exports = {
   appendUsuario,
   lerUsuariosPaginado,
+  contarTotalUsuarios,
   editarUsuario,
   deletarUsuario,
 };

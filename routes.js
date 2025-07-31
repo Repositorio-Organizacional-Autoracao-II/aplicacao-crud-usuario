@@ -1,44 +1,42 @@
+// routes.js
+
 const express = require("express");
 const path = require("path");
 const router = express.Router();
 const {
   appendUsuario,
   lerUsuariosPaginado,
+  contarTotalUsuarios,
   editarUsuario,
   deletarUsuario,
 } = require("./users-control");
 const { sanitizarTexto, validarCampos } = require("./valida");
-const {lerTodosUusarios} = require("./users-control");
 
 // Serve página inicial (index.html)
 router.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// Listar usuários paginados via query params ?pagina=1&porPagina=20 (padrão 1 e 20)
+/**
+ * Lista usuários paginados e retorna também o total de usuários.
+ */
 router.get("/list-users", async (req, res) => {
   try {
     const pagina = parseInt(req.query.pagina) || 1;
     const porPagina = parseInt(req.query.porPagina) || 20;
 
     const usuarios = await lerUsuariosPaginado(pagina, porPagina);
-    res.json({ ok: true, pagina, porPagina, usuarios });
+    const total = await contarTotalUsuarios();
+
+    res.json({ ok: true, pagina, porPagina, total, usuarios });
   } catch (err) {
     res.status(500).json({ error: "Erro ao ler usuários" });
   }
 });
 
-//Ler todos os usuários
-router.get("/list-all-users", async(req,res) => {
-  try {
-    const usuarios = await lerTodosUusarios();
-    res.json({ok: true, total: usuarios.length, usuarios});
-  } catch (e){
-    res.status(500).json({ok: false, error: "erro ao ler todos os usuários"});
-  }
-});
-
-// Cadastrar usuário (append)
+/**
+ * Cadastra um novo usuário usando append.
+ */
 router.post("/cadastrar-usuario", async (req, res) => {
   try {
     const usuario = {
@@ -59,7 +57,9 @@ router.post("/cadastrar-usuario", async (req, res) => {
   }
 });
 
-// Atualizar usuário pelo id
+/**
+ * Atualiza usuário por ID.
+ */
 router.put("/atualizar-usuario/:id", async (req, res) => {
   try {
     const id = req.params.id;
@@ -81,7 +81,9 @@ router.put("/atualizar-usuario/:id", async (req, res) => {
   }
 });
 
-// Remover usuário pelo id
+/**
+ * Remove usuário por ID.
+ */
 router.delete("/remover-usuario/:id", async (req, res) => {
   try {
     const id = req.params.id;
