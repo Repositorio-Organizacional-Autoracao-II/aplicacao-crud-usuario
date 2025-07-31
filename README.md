@@ -56,10 +56,10 @@ Você pode acessar um tutorial completo sobre estra aplicação de exemplo atrav
 | RF0002 | Listar os usuários em uma interface web com paginação                    | ☑️           |
 | RF0003 | Ordenar os usuários por nome ou idade, de forma crescente ou decrescente | ☑️           |
 | RF0004 | Inserir um novo usuário na base de dados (arquivo JSON)                  | ☑️           |
-| RF0005 | Atualizar os dados de um usuário (pelo ID)                               | ⬜           |
-| RF0006 | Remover um usuário do sistema (pelo ID\_                                 | ⬜           |
-| RNF001 | Salvar e manter persistência dos usuários em arquivo JSON                | ⬜           |
-| RNF002 | Paginar os usuários usando API (/list-users/:count?)                     | ⬜           |
+| RF0005 | Atualizar os dados de um usuário (pelo ID)                               | ☑️           |
+| RF0006 | Remover um usuário do sistema (pelo ID\_                                 | ☑️           |
+| RNF001 | Salvar e manter persistência dos usuários em arquivo JSON                | ☑️           |
+| RNF002 | Paginar os usuários usando API (/list-users/:count?)                     | ☑️           |
 
 ---
 
