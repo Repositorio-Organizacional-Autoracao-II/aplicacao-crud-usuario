@@ -20,6 +20,9 @@ Universidade Federal do Ceará (UFC)
 
 
 ## Link para vídeo no youtube
+https://www.youtube.com/watch?v=4mUeE_hp1u4
+
+ou Clique no banner:
 
 [![Assista ao vídeo](https://img.youtube.com/vi/4mUeE_hp1u4/hqdefault.jpg)](https://www.youtube.com/watch?v=4mUeE_hp1u4)
 
